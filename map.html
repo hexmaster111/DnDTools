@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Editor</title>
+    <style>
+        #grid-container {
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .grid-row {
+            display: flex;
+        }
+        .grid-cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .tile-value {
+            margin: 5px 0;
+        }
+        .tile-button {
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Map Editor</h1>
+    <label for="map-width">Width:</label>
+    <input type="number" id="map-width" min="1" value="5">
+    <label for="map-height">Height:</label>
+    <input type="number" id="map-height" min="1" value="5">
+    <button id="initialize-button">Initialize Map</button>
+    <div id="grid-container"></div>
+    
+    <h2>Sprite Mapping</h2>
+    <table id="sprite-table" border="1">
+        <thead>
+            <tr>
+                <th>Number</th>
+                <th>Sprite URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="number" placeholder="0"></td>
+                <td><input type="text" placeholder="https://example.com/sprite.png"></td>
+            </tr>
+            <tr>
+                <td><input type="number" placeholder="1"></td>
+                <td><input type="text" placeholder="https://example.com/sprite1.png"></td>
+            </tr>
+        </tbody>
+    </table>
+    <button id="update-sprites-button">Update Sprites</button>
+    
+    <script src="mapEditor.js"></script>
+</body>
+</html>
