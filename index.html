@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DnD Inventory</title>
+    <style>
+
+        th {
+            background-color: #f4f4f4;
+        }
+        .add-button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .add-button:hover {
+            background-color: #45a049;
+        }
+        .save-load-buttons {
+            margin-top: 10px;
+            margin-bottom: 20px; 
+        }
+        .save-load-buttons button {
+            padding: 10px 15px;
+            margin-right: 5px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .save-load-buttons button:hover {
+            background-color: #007BB5;
+        }
+        .save-load-buttons button.save-json {
+            background-color: #FF9800;
+        }
+        .save-load-buttons button.save-json:hover {
+            background-color: #FB8C00;
+        }
+        .save-load-buttons button.load-json {
+            background-color: #9C27B0;
+        }
+        .save-load-buttons button.load-json:hover {
+            background-color: #7B1FA2;
+        }
+        .file-input {
+            display: none;
+        }
+        .quantity-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .quantity-buttons button {
+            padding: 5px 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .quantity-buttons button:hover {
+            background-color: #1976D2;
+        }
+        .delete-button {
+            padding: 5px 10px;
+            background-color: #F44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .delete-button:hover {
+            background-color: #D32F2F;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+        .tab-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab-buttons button {
+            padding: 10px 15px;
+            margin-right: 5px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .tab-buttons button.active {
+            background-color: #005f73;
+        }
+        .tab-buttons button:hover {
+            background-color: #007BB5;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="save-load-buttons">
+        <button onclick="saveInventory()">Save</button>
+        <button onclick="loadInventory()">Load</button>
+        <button class="save-json" onclick="saveToJsonFile()">Save to JSON</button>
+        <button class="load-json" onclick="document.getElementById('file-input').click()">Load from JSON</button>
+        <input type="file" id="file-input" class="file-input" accept=".json" onchange="loadFromJsonFile(event)">
+    </div>
+
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <button class="active" onclick="showTab('inventory-tab')">Inventory</button>
+            <button onclick="showTab('skills-tab')">Skills</button>
+            <button onclick="showTab('blank-tab')">New Tab</button>
+        </div>
+        <div id="inventory-tab" class="tab-content active">
+            <h2>Backpack</h2>
+            <p id="backpack-total-weight">Total Weight: 0 lb</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th>Weight</th>
+                        <th>Description</th>
+                        <th>Cost</th>
+                        <th>Damage</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-body">
+                    <!-- Items will be added here -->
+                </tbody>
+            </table>
+            <button class="add-button" onclick="addItem()">+ Add Item</button>
+
+            <h2>Equipped</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th>Weight</th>
+                        <th>Description</th>
+                        <th>Cost</th>
+                        <th>Damage</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="equipped-body">
+                    <!-- Equipped items will be added here -->
+                </tbody>
+            </table>
+        </div>
+        <div id="skills-tab" class="tab-content">
+            <h2>Skills</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Value</th>
+                        <th>Modifier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Strength</td>
+                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td class="modifier">0</td>
+                    </tr>
+                    <tr>
+                        <td>Dexterity</td>
+                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td class="modifier">0</td>
+                    </tr>
+                    <tr>
+                        <td>Constitution</td>
+                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td class="modifier">0</td>
+                    </tr>
+                    <tr>
+                        <td>Intelligence</td>
+                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td class="modifier">0</td>
+                    </tr>
+                    <tr>
+                        <td>Wisdom</td>
+                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td class="modifier">0</td>
+                    </tr>
+                    <tr>
+                        <td>Charisma</td>
+                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td class="modifier">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="blank-tab" class="tab-content">
+            <h2>New Tab</h2>
+            <p>This is a blank tab. Add your content here.</p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-buttons button');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-buttons button[onclick="showTab('${tabId}')"]`).classList.add('active');
+        }
+
+        const dndCategories = [
+            "Weapon",
+            "Armor",
+            "Potion",
+            "Tool",
+            "Miscellaneous"
+        ];
+
+        function createCategoryDropdown(selectedCategory = "") {
+            const dropdown = document.createElement("select");
+            dropdown.innerHTML = dndCategories
+                .map(category => `<option value="${category}" ${category === selectedCategory ? "selected" : ""}>${category}</option>`)
+                .join("");
+            dropdown.addEventListener("change", updateAllWeights);
+            return dropdown.outerHTML;
+        }
+
+        function calculateTotalWeight() {
+            const inventoryBody = document.getElementById('inventory-body');
+            const equippedBody = document.getElementById('equipped-body');
+            let totalWeight = 0;
+
+            [inventoryBody, equippedBody].forEach(tableBody => {
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const weightCell = row.querySelectorAll('td')[3];
+                    const quantityCell = row.querySelectorAll('td')[2].querySelector('span');
+                    const weight = parseFloat(weightCell.innerText.replace(' lb', '')) || 0;
+                    const quantity = parseInt(quantityCell.innerText, 10) || 0;
+                    totalWeight += weight * quantity;
+                });
+            });
+
+            document.getElementById('backpack-total-weight').innerText = `Total Weight: ${totalWeight} lb`;
+        }
+
+        function updateAllWeights() {
+            calculateTotalWeight();
+        }
+
+        function moveToEquipped(button) {
+            const row = button.closest('tr');
+            document.getElementById('equipped-body').appendChild(row);
+            updateActionButton(row, 'Unequip', moveToInventory);
+            updateAllWeights();
+        }
+
+        function moveToInventory(button) {
+            const row = button.closest('tr');
+            document.getElementById('inventory-body').appendChild(row);
+            updateActionButton(row, 'Equip', moveToEquipped);
+            updateAllWeights();
+        }
+
+        function updateActionButton(row, buttonText, action) {
+            const actionCell = row.querySelector('td:last-child');
+            actionCell.innerHTML = `<button class="delete-button" onclick="deleteItem(this)">Delete</button>
+                                    <button class="add-button" onclick="(${action.toString()})(this)">${buttonText}</button>`;
+        }
+
+        function addItem() {
+            const tableBody = document.getElementById('inventory-body');
+            const newRow = document.createElement('tr');
+
+            newRow.innerHTML = `
+                <td>${createCategoryDropdown()}</td>
+                <td contenteditable="true">New Item</td>
+                <td>
+                    <div class="quantity-buttons">
+                        <button onclick="decrementQuantity(this)">-</button>
+                        <span contenteditable="true" oninput="updateAllWeights()">1</span>
+                        <button onclick="incrementQuantity(this)">+</button>
+                    </div>
+                </td>
+                <td contenteditable="true" oninput="updateAllWeights()">0 lb</td>
+                <td contenteditable="true">Description</td>
+                <td contenteditable="true">0g 0s 0c</td>
+                <td contenteditable="true">0d0+0</td>
+                <td>
+                    <button class="delete-button" onclick="deleteItem(this)">Delete</button>
+                    <button class="add-button" onclick="moveToEquipped(this)">Equip</button>
+                </td>
+            `;
+
+            tableBody.appendChild(newRow);
+            updateAllWeights();
+        }
+
+        function incrementQuantity(button) {
+            const quantitySpan = button.previousElementSibling;
+            const currentQuantity = parseInt(quantitySpan.innerText, 10) || 0;
+            quantitySpan.innerText = currentQuantity + 1;
+            updateAllWeights();
+        }
+
+        function decrementQuantity(button) {
+            const quantitySpan = button.nextElementSibling;
+            const currentQuantity = parseInt(quantitySpan.innerText, 10) || 0;
+            if (currentQuantity > 0) {
+                quantitySpan.innerText = currentQuantity - 1;
+                updateAllWeights();
+            }
+        }
+
+        function deleteItem(button) {
+            const row = button.closest('tr');
+            row.remove();
+            updateAllWeights();
+        }
+
+        function saveInventory() {
+            const inventory = {
+                inventory: getTableData('inventory-body'),
+                equipped: getTableData('equipped-body'),
+                skills: getSkillsData()
+            };
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            alert('Inventory and skills saved!');
+        }
+
+        function loadInventory() {
+            const tableBody = document.getElementById('inventory-body');
+            const equippedBody = document.getElementById('equipped-body');
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || { inventory: [], equipped: [], skills: [] };
+
+            tableBody.innerHTML = ''; // Clear existing rows
+            equippedBody.innerHTML = ''; // Clear equipped rows
+
+            inventory.inventory.forEach(item => {
+                const newRow = createRow(item, 'Equip', moveToEquipped);
+                tableBody.appendChild(newRow);
+            });
+
+            inventory.equipped.forEach(item => {
+                const newRow = createRow(item, 'Unequip', moveToInventory);
+                equippedBody.appendChild(newRow);
+            });
+
+            loadSkillsData(inventory.skills);
+            updateAllWeights();
+            alert('Inventory and skills loaded!');
+        }
+
+        function getTableData(tableId) {
+            const tableBody = document.getElementById(tableId);
+            const rows = tableBody.querySelectorAll('tr');
+            const data = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const categoryDropdown = cells[0].querySelector("select");
+                data.push({
+                    category: categoryDropdown ? categoryDropdown.value : "",
+                    name: cells[1].innerText,
+                    quantity: cells[2].querySelector('span').innerText,
+                    weight: cells[3].innerText.replace(' lb', ''),
+                    description: cells[4].innerText,
+                    cost: cells[5].innerText,
+                    damage: cells[6].innerText
+                });
+            });
+
+            return data;
+        }
+
+        function createRow(item, buttonText, action) {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${createCategoryDropdown(item.category)}</td>
+                <td contenteditable="true">${item.name}</td>
+                <td>
+                    <div class="quantity-buttons">
+                        <button onclick="decrementQuantity(this)">-</button>
+                        <span contenteditable="true" oninput="updateAllWeights()">${item.quantity}</span>
+                        <button onclick="incrementQuantity(this)">+</button>
+                    </div>
+                </td>
+                <td contenteditable="true" oninput="updateAllWeights()">${item.weight} lb</td>
+                <td contenteditable="true">${item.description}</td>
+                <td contenteditable="true">${item.cost}</td>
+                <td contenteditable="true">${item.damage}</td>
+                <td>
+                    <button class="delete-button" onclick="deleteItem(this)">Delete</button>
+                    <button class="add-button" onclick="(${action.toString()})(this)">${buttonText}</button>
+                </td>
+            `;
+            return newRow;
+        }
+
+        function saveToJsonFile() {
+            const tableBody = document.getElementById('inventory-body');
+            const equippedBody = document.getElementById('equipped-body');
+            const inventory = {
+                inventory: getTableData('inventory-body'),
+                equipped: getTableData('equipped-body')
+            };
+
+            const jsonString = JSON.stringify(inventory, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'inventory.json';
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        function loadFromJsonFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const inventory = JSON.parse(e.target.result);
+                    const tableBody = document.getElementById('inventory-body');
+                    const equippedBody = document.getElementById('equipped-body');
+                    tableBody.innerHTML = ''; // Clear existing rows
+                    equippedBody.innerHTML = ''; // Clear equipped rows
+
+                    inventory.inventory.forEach(item => {
+                        const newRow = createRow(item, 'Equip', moveToEquipped);
+                        tableBody.appendChild(newRow);
+                    });
+
+                    inventory.equipped.forEach(item => {
+                        const newRow = createRow(item, 'Unequip', moveToInventory);
+                        equippedBody.appendChild(newRow);
+                    });
+
+                    updateAllWeights();
+                    alert('Inventory loaded from JSON!');
+                } catch (error) {
+                    alert('Invalid JSON file.');
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        function updateModifiers(cell) {
+            const value = parseInt(cell.innerText, 10) || 0;
+            const modifier = Math.floor((value - 10) / 2);
+            const modifierCell = cell.nextElementSibling;
+            modifierCell.innerText = modifier;
+        }
+
+        function getSkillsData() {
+            const rows = document.querySelectorAll('#skills-tab tbody tr');
+            const skills = [];
+
+            rows.forEach(row => {
+                const skillName = row.querySelector('td:first-child').innerText;
+                const skillValue = parseInt(row.querySelector('td:nth-child(2)').innerText, 10) || 0;
+                skills.push({ name: skillName, value: skillValue });
+            });
+
+            return skills;
+        }
+
+        function loadSkillsData(skills) {
+            const rows = document.querySelectorAll('#skills-tab tbody tr');
+
+            skills.forEach(skill => {
+                const row = Array.from(rows).find(r => r.querySelector('td:first-child').innerText === skill.name);
+                if (row) {
+                    const valueCell = row.querySelector('td:nth-child(2)');
+                    valueCell.innerText = skill.value;
+                    updateModifiers(valueCell);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

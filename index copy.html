@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DnD Inventory</title>
+    <style>
+     
+        th {
+            background-color: #f4f4f4;
+        }
+        .add-button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .add-button:hover {
+            background-color: #45a049;
+        }
+        .save-load-buttons {
+            margin-top: 10px;
+        }
+        .save-load-buttons button {
+            padding: 10px 15px;
+            margin-right: 5px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .save-load-buttons button:hover {
+            background-color: #007BB5;
+        }
+        .save-load-buttons button.save-json {
+            background-color: #FF9800;
+        }
+        .save-load-buttons button.save-json:hover {
+            background-color: #FB8C00;
+        }
+        .save-load-buttons button.load-json {
+            background-color: #9C27B0;
+        }
+        .save-load-buttons button.load-json:hover {
+            background-color: #7B1FA2;
+        }
+        .file-input {
+            display: none;
+        }
+        .quantity-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .quantity-buttons button {
+            padding: 5px 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .quantity-buttons button:hover {
+            background-color: #1976D2;
+        }
+        .delete-button {
+            padding: 5px 10px;
+            background-color: #F44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .delete-button:hover {
+            background-color: #D32F2F;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h2>Backpack</h2>
+
+    <div class="save-load-buttons">
+        <button onclick="saveInventory()">Save</button>
+        <button onclick="loadInventory()">Load</button>
+        <button class="save-json" onclick="saveToJsonFile()">Save to JSON</button>
+        <button class="load-json" onclick="document.getElementById('file-input').click()">Load from JSON</button>
+        <input type="file" id="file-input" class="file-input" accept=".json" onchange="loadFromJsonFile(event)">
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Weight</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="inventory-body">
+            <!-- Items will be added here -->
+        </tbody>
+    </table>
+    <button class="add-button" onclick="addItem()">+ Add Item</button>
+
+
+    <script>
+        function addItem() {
+            const tableBody = document.getElementById('inventory-body');
+            const newRow = document.createElement('tr');
+
+            newRow.innerHTML = `
+                <td contenteditable="true">New Item</td>
+                <td>
+                    <div class="quantity-buttons">
+                        <button onclick="decrementQuantity(this)">-</button>
+                        <span contenteditable="true">1</span>
+                        <button onclick="incrementQuantity(this)">+</button>
+                    </div>
+                </td>
+                <td contenteditable="true">0</td>
+                <td contenteditable="true">Description</td>
+                <td><button class="delete-button" onclick="deleteItem(this)">Delete</button></td>
+            `;
+
+            tableBody.appendChild(newRow);
+        }
+
+        function incrementQuantity(button) {
+            const quantitySpan = button.previousElementSibling;
+            const currentQuantity = parseInt(quantitySpan.innerText, 10) || 0;
+            quantitySpan.innerText = currentQuantity + 1;
+        }
+
+        function decrementQuantity(button) {
+            const quantitySpan = button.nextElementSibling;
+            const currentQuantity = parseInt(quantitySpan.innerText, 10) || 0;
+            if (currentQuantity > 0) {
+                quantitySpan.innerText = currentQuantity - 1;
+            }
+        }
+
+        function deleteItem(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        function saveInventory() {
+            const tableBody = document.getElementById('inventory-body');
+            const rows = tableBody.querySelectorAll('tr');
+            const inventory = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                inventory.push({
+                    name: cells[0].innerText,
+                    quantity: cells[1].querySelector('span').innerText,
+                    weight: cells[2].innerText,
+                    description: cells[3].innerText
+                });
+            });
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            alert('Inventory saved!');
+        }
+
+        function loadInventory() {
+            const tableBody = document.getElementById('inventory-body');
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            inventory.forEach(item => {
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td contenteditable="true">${item.name}</td>
+                    <td>
+                        <div class="quantity-buttons">
+                            <button onclick="decrementQuantity(this)">-</button>
+                            <span contenteditable="true">${item.quantity}</span>
+                            <button onclick="incrementQuantity(this)">+</button>
+                        </div>
+                    </td>
+                    <td contenteditable="true">${item.weight}</td>
+                    <td contenteditable="true">${item.description}</td>
+                    <td><button class="delete-button" onclick="deleteItem(this)">Delete</button></td>
+                `;
+                tableBody.appendChild(newRow);
+            });
+
+            alert('Inventory loaded!');
+        }
+
+        function saveToJsonFile() {
+            const tableBody = document.getElementById('inventory-body');
+            const rows = tableBody.querySelectorAll('tr');
+            const inventory = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                inventory.push({
+                    name: cells[0].innerText,
+                    quantity: cells[1].querySelector('span').innerText,
+                    weight: cells[2].innerText,
+                    description: cells[3].innerText
+                });
+            });
+
+            const jsonString = JSON.stringify(inventory, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'inventory.json';
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        function loadFromJsonFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const inventory = JSON.parse(e.target.result);
+                    const tableBody = document.getElementById('inventory-body');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    inventory.forEach(item => {
+                        const newRow = document.createElement('tr');
+                        newRow.innerHTML = `
+                            <td contenteditable="true">${item.name}</td>
+                            <td>
+                                <div class="quantity-buttons">
+                                    <button onclick="decrementQuantity(this)">-</button>
+                                    <span contenteditable="true">${item.quantity}</span>
+                                    <button onclick="incrementQuantity(this)">+</button>
+                                </div>
+                            </td>
+                            <td contenteditable="true">${item.weight}</td>
+                            <td contenteditable="true">${item.description}</td>
+                            <td><button class="delete-button" onclick="deleteItem(this)">Delete</button></td>
+                        `;
+                        tableBody.appendChild(newRow);
+                    });
+
+                    alert('Inventory loaded from JSON!');
+                } catch (error) {
+                    alert('Invalid JSON file.');
+                }
+            };
+
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
