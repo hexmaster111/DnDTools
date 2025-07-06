@@ -135,28 +135,6 @@
             <button onclick="showTab('blank-tab')">New Tab</button>
         </div>
         <div id="inventory-tab" class="tab-content active">
-            <h2>Backpack</h2>
-            <p id="backpack-total-weight">Total Weight: 0 lb</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Item Name</th>
-                        <th>Quantity</th>
-                        <th>Weight</th>
-                        <th>Description</th>
-                        <th>Cost</th>
-                        <th>Damage</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="inventory-body">
-                    <!-- Items will be added here -->
-                </tbody>
-            </table>
-            <button class="add-button" onclick="addItem()">+ Add Item</button>
-
             <h2>Equipped</h2>
             <table>
                 <thead>
@@ -175,13 +153,54 @@
                     <!-- Equipped items will be added here -->
                 </tbody>
             </table>
-        </div>
-        <div id="skills-tab" class="tab-content">
-            <h2>Skills</h2>
+
+            <h2>Backpack</h2>
+            <p id="backpack-total-weight">Total Weight: 0 lb</p>
             <table>
                 <thead>
                     <tr>
-                        <th>Skill</th>
+                        <th>Category</th>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th>Weight</th>
+                        <th>Description</th>
+                        <th>Cost</th>
+                        <th>Damage</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-body">
+                    <!-- Items will be added here -->
+                </tbody>
+            </table>
+            <button class="add-button" onclick="addItem()">+ Add Item</button>
+        </div>
+        <div id="skills-tab" class="tab-content">
+            <h2>Character Info</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Player Level</td>
+                        <td contenteditable="true" id="player-level" oninput="updateProficiencyBonus()">1</td>
+                    </tr>
+                    <tr>
+                        <td>Proficiency Bonus</td>
+                        <td id="proficiency-bonus">+2</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Ability Scores</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ability</th>
                         <th>Value</th>
                         <th>Modifier</th>
                     </tr>
@@ -189,33 +208,135 @@
                 <tbody>
                     <tr>
                         <td>Strength</td>
-                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td contenteditable="true" oninput="updateAbilityModifier(this)">10</td>
                         <td class="modifier">0</td>
                     </tr>
                     <tr>
                         <td>Dexterity</td>
-                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td contenteditable="true" oninput="updateAbilityModifier(this)">10</td>
                         <td class="modifier">0</td>
                     </tr>
                     <tr>
                         <td>Constitution</td>
-                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td contenteditable="true" oninput="updateAbilityModifier(this)">10</td>
                         <td class="modifier">0</td>
                     </tr>
                     <tr>
                         <td>Intelligence</td>
-                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td contenteditable="true" oninput="updateAbilityModifier(this)">10</td>
                         <td class="modifier">0</td>
                     </tr>
                     <tr>
                         <td>Wisdom</td>
-                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td contenteditable="true" oninput="updateAbilityModifier(this)">10</td>
                         <td class="modifier">0</td>
                     </tr>
                     <tr>
                         <td>Charisma</td>
-                        <td contenteditable="true" oninput="updateModifiers(this)">10</td>
+                        <td contenteditable="true" oninput="updateAbilityModifier(this)">10</td>
                         <td class="modifier">0</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Proficient</th>
+                        <th>Skill</th>
+                        <th>Stat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Acrobatics</td>
+                        <td>Dexterity</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Animal Handling</td>
+                        <td>Wisdom</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Arcana</td>
+                        <td>Intelligence</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Athletics</td>
+                        <td>Strength</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Deception</td>
+                        <td>Charisma</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>History</td>
+                        <td>Intelligence</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Insight</td>
+                        <td>Wisdom</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Intimidation</td>
+                        <td>Charisma</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Investigation</td>
+                        <td>Intelligence</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Medicine</td>
+                        <td>Wisdom</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Nature</td>
+                        <td>Intelligence</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Perception</td>
+                        <td>Wisdom</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Performance</td>
+                        <td>Charisma</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Persuasion</td>
+                        <td>Charisma</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Religion</td>
+                        <td>Intelligence</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Sleight of Hand</td>
+                        <td>Dexterity</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Stealth</td>
+                        <td>Dexterity</td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>Survival</td>
+                        <td>Wisdom</td>
                     </tr>
                 </tbody>
             </table>
@@ -350,17 +471,19 @@
             const inventory = {
                 inventory: getTableData('inventory-body'),
                 equipped: getTableData('equipped-body'),
-                skills: getSkillsData()
+                skills: getSkillsData(),
+                characterInfo: getCharacterInfo(),
+                abilityScores: getAbilityScores()
             };
 
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            alert('Inventory and skills saved!');
+            alert('Inventory, skills, character info, and ability scores saved!');
         }
 
         function loadInventory() {
             const tableBody = document.getElementById('inventory-body');
             const equippedBody = document.getElementById('equipped-body');
-            const inventory = JSON.parse(localStorage.getItem('inventory')) || { inventory: [], equipped: [], skills: [] };
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || { inventory: [], equipped: [], skills: [], characterInfo: {}, abilityScores: [] };
 
             tableBody.innerHTML = ''; // Clear existing rows
             equippedBody.innerHTML = ''; // Clear equipped rows
@@ -376,8 +499,51 @@
             });
 
             loadSkillsData(inventory.skills);
+            loadCharacterInfo(inventory.characterInfo);
+            loadAbilityScores(inventory.abilityScores);
             updateAllWeights();
-            alert('Inventory and skills loaded!');
+            alert('Inventory, skills, character info, and ability scores loaded!');
+        }
+
+        function getCharacterInfo() {
+            const playerLevel = parseInt(document.getElementById('player-level').innerText, 10) || 1;
+            const proficiencyBonus = document.getElementById('proficiency-bonus').innerText;
+            return { playerLevel, proficiencyBonus };
+        }
+
+        function loadCharacterInfo(characterInfo) {
+            if (characterInfo) {
+                document.getElementById('player-level').innerText = characterInfo.playerLevel || 1;
+                document.getElementById('proficiency-bonus').innerText = characterInfo.proficiencyBonus || '+2';
+            }
+        }
+
+        function getAbilityScores() {
+            const rows = document.querySelectorAll('#skills-tab table:nth-of-type(2) tbody tr');
+            const abilityScores = [];
+
+            rows.forEach(row => {
+                const ability = row.querySelector('td:first-child').innerText;
+                const value = parseInt(row.querySelector('td:nth-child(2)').innerText, 10) || 0;
+                const modifier = row.querySelector('td:nth-child(3)').innerText;
+                abilityScores.push({ ability, value, modifier });
+            });
+
+            return abilityScores;
+        }
+
+        function loadAbilityScores(abilityScores) {
+            const rows = document.querySelectorAll('#skills-tab table:nth-of-type(2) tbody tr');
+
+            abilityScores.forEach(score => {
+                const row = Array.from(rows).find(r => r.querySelector('td:first-child').innerText === score.ability);
+                if (row) {
+                    const valueCell = row.querySelector('td:nth-child(2)');
+                    const modifierCell = row.querySelector('td:nth-child(3)');
+                    valueCell.innerText = score.value;
+                    modifierCell.innerText = score.modifier;
+                }
+            });
         }
 
         function getTableData(tableId) {
@@ -427,11 +593,12 @@
         }
 
         function saveToJsonFile() {
-            const tableBody = document.getElementById('inventory-body');
-            const equippedBody = document.getElementById('equipped-body');
             const inventory = {
                 inventory: getTableData('inventory-body'),
-                equipped: getTableData('equipped-body')
+                equipped: getTableData('equipped-body'),
+                skills: getSkillsData(),
+                characterInfo: getCharacterInfo(),
+                abilityScores: getAbilityScores()
             };
 
             const jsonString = JSON.stringify(inventory, null, 2);
@@ -469,8 +636,11 @@
                         equippedBody.appendChild(newRow);
                     });
 
+                    loadSkillsData(inventory.skills);
+                    loadCharacterInfo(inventory.characterInfo);
+                    loadAbilityScores(inventory.abilityScores);
                     updateAllWeights();
-                    alert('Inventory loaded from JSON!');
+                    alert('Inventory, skills, character info, and ability scores loaded from JSON!');
                 } catch (error) {
                     alert('Invalid JSON file.');
                 }
@@ -486,30 +656,69 @@
             modifierCell.innerText = modifier;
         }
 
+        function updateSkillValue(input) {
+            const value = parseInt(input.value, 10) || 0;
+            const modifierCell = input.parentElement.nextElementSibling;
+            const modifier = Math.floor((value - 10) / 2);
+            modifierCell.innerText = modifier;
+        }
+
         function getSkillsData() {
-            const rows = document.querySelectorAll('#skills-tab tbody tr');
+            const rows = document.querySelectorAll('#skills-tab table:nth-of-type(3) tbody tr'); // Ensure correct table is targeted
             const skills = [];
 
             rows.forEach(row => {
-                const skillName = row.querySelector('td:first-child').innerText;
-                const skillValue = parseInt(row.querySelector('td:nth-child(2)').innerText, 10) || 0;
-                skills.push({ name: skillName, value: skillValue });
+                const proficientCheckbox = row.querySelector('td:first-child input[type="checkbox"]');
+                const skillName = row.querySelector('td:nth-child(2)').innerText;
+                const stat = row.querySelector('td:nth-child(3)').innerText;
+
+                skills.push({
+                    name: skillName,
+                    stat: stat,
+                    proficient: proficientCheckbox.checked
+                });
             });
 
             return skills;
         }
 
         function loadSkillsData(skills) {
-            const rows = document.querySelectorAll('#skills-tab tbody tr');
+            const tableBody = document.querySelector('#skills-tab table:nth-of-type(3) tbody'); // Ensure correct table is targeted
+            const existingRows = Array.from(tableBody.querySelectorAll('tr'));
 
             skills.forEach(skill => {
-                const row = Array.from(rows).find(r => r.querySelector('td:first-child').innerText === skill.name);
-                if (row) {
-                    const valueCell = row.querySelector('td:nth-child(2)');
-                    valueCell.innerText = skill.value;
-                    updateModifiers(valueCell);
+                let row = existingRows.find(r => r.querySelector('td:nth-child(2)').innerText === skill.name);
+
+                if (!row) {
+                    // Add new skill if it doesn't exist
+                    row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><input type="checkbox" ${skill.proficient ? 'checked' : ''}></td>
+                        <td>${skill.name}</td>
+                        <td>${skill.stat}</td>
+                    `;
+                    tableBody.appendChild(row);
+                } else {
+                    // Update existing skill
+                    const proficientCheckbox = row.querySelector('td:first-child input[type="checkbox"]');
+                    if (proficientCheckbox) {
+                        proficientCheckbox.checked = skill.proficient || false;
+                    }
                 }
             });
+        }
+
+        function updateAbilityModifier(cell) {
+            const value = parseInt(cell.innerText, 10) || 0;
+            const modifier = Math.floor((value - 10) / 2);
+            const modifierCell = cell.nextElementSibling;
+            modifierCell.innerText = modifier;
+        }
+
+        function updateProficiencyBonus() {
+            const level = parseInt(document.getElementById('player-level').innerText, 10) || 1;
+            const bonus = Math.floor((level - 1) / 4) + 2; // Proficiency bonus increases every 4 levels
+            document.getElementById('proficiency-bonus').innerText = `+${bonus}`;
         }
     </script>
 </body>
